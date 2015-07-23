@@ -1,0 +1,78 @@
+#!/bin/bash
+
+function getWar() {
+  WARFILES=`ls -1 target/*.war | tr "\n" "|"`
+  QTDWARS=`echo $WARFILES | tr "|" "\n" | grep -v "^$" | wc -l`
+  if [ $QTDWARS -eq 0 ]
+  then
+    echo "Não há arquivos war para deploy."
+    exit 1
+  fi
+  
+  if [ $QTDWARS -gt 1 ]
+  then
+    echo "Há $QTDWARS arquvos war em target"
+    ls -1 target/*.war
+    echo "Escolha de wars não implementada, passe como parametro."
+    exit 1
+  fi
+
+  WAR=`ls -1 target/*.war`
+}
+
+
+function shutdown_tomcat() {
+#	cd $TOMCAT_HOME/bin
+#	./shutdown.sh
+	TOMCAT_PID=`cat $TOMCAT_HOME/catalina.pid`
+
+	# Melhorar fazendo a verificação do PID e só dar kill se precisar	
+	if [ $? -eq 0 ]
+  then
+    kill $TOMCAT_PID
+	  sleep 5
+	  rm -f $TOMCAT_HOME/catalina.pid
+  else
+    echo "$TOMCAT_HOME/catalina.pid nao encontrado"
+  fi
+}
+
+
+function startup_tomcat() {
+	cd $TOMCAT_HOME/bin
+  #./startup.sh
+  ./catalina.sh jpda start
+  cd -
+	# Melhorar fazendo a verificação do PID e só dar kill se precisar	
+}
+
+
+function install_app() {
+	APP_WAR=`basename $WAR`
+  APP_DIR=`echo $APP_WAR | sed "s/\.war//"`
+  rm -rf $TOMCAT_HOME/webapps/$APP_DIR $TOMCAT_HOME/webapps/$APP_WAR
+  cp $WAR $TOMCAT_HOME/webapps/
+}
+
+if [ $# -lt 1 ]
+then
+  getWar
+else
+  WAR=$1
+fi
+
+#TOMCAT_HOME="$HOME/bin/apache-tomcat-7.0.53"
+TOMCAT_HOME="$HOME/opt/apache-tomcat"
+
+echo "Deploy de $WAR no tomcat em $TOMCAT_HOME"
+
+shutdown_tomcat
+install_app
+startup_tomcat
+
+tail -f $TOMCAT_HOME/logs/catalina.out
+
+echo "LOG:"
+echo "tail -f $TOMCAT_HOME/logs/catalina.out"
+
+exit 0

@@ -1,0 +1,57 @@
+#!/bin/bash
+
+IN=`expr $1 + 0 2> /dev/null`
+if [ $? -ne 0 ]
+then
+  echo "Numero inválido! - $1"
+  exit 1
+fi
+
+TZEROS=`printf "%012d" $IN`
+
+LENGTH=`echo -n "$TZEROS" | wc -c`
+if [ $LENGTH -gt 13 ]
+then
+  echo "Numero inválido! - $1"
+  echo "Use até 12 dígitos para gerar ou 13 digitos para validar."
+  echo "Se usar 13 dígitos o dígito será recalculado"
+  exit 1
+fi
+
+TRIM=`printf "%12.12s" $TZEROS`
+
+I=1
+PAR=0
+IMPAR=0
+for N in `echo $TRIM | sed -e 's/\(.\)/\1\n/g'`
+do
+  if [ `expr $I % 2` -eq 0 ]
+  then
+    PAR=`expr $PAR + $N`
+  else
+    IMPAR=`expr $IMPAR + $N`
+  fi
+# echo $I $N 
+  I=`expr $I + 1`
+done
+
+NUM=`expr 3 \* $PAR + $IMPAR`
+MOD=`expr 10 - $NUM % 10`
+
+if [ $MOD -lt 10 ]
+then
+  DIG=$MOD
+else
+  if [ `expr $MOD % 10` -eq 0 ]
+  then
+    DIG=0
+  else
+    echo "Erro! Algoritmo deve estar errado..."
+    echo $TZEROS $IMPAR $PAR $NUM $MOD $DIG
+    exit 1
+  fi
+fi
+
+echo ${TRIM}${DIG}
+
+exit 0
