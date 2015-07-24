@@ -1,0 +1,103 @@
+" Vundle - https://github.com/gmarik/Vundle.vim
+set nocompatible              " be iMproved, required
+filetype off                  " required
+
+" set the runtime path to include Vundle and initialize
+set rtp+=~/.vim/bundle/Vundle.vim
+call vundle#begin()
+" alternatively, pass a path where Vundle should install plugins
+"call vundle#begin('~/some/path/here')
+
+" let Vundle manage Vundle, required
+Plugin 'gmarik/Vundle.vim'
+
+" The following are examples of different formats supported.
+" Keep Plugin commands between vundle#begin/end.
+" plugin on GitHub repo
+Plugin 'tpope/vim-fugitive'
+" plugin from http://vim-scripts.org/vim/scripts.html
+Plugin 'L9'
+" Git plugin not hosted on GitHub
+Plugin 'git://git.wincent.com/command-t.git'
+" git repos on your local machine (i.e. when working on your own plugin)
+Plugin 'file:///home/gmarik/path/to/plugin'
+" The sparkup vim script is in a subdirectory of this repo called vim.
+" Pass the path to set the runtimepath properly.
+Plugin 'rstacruz/sparkup', {'rtp': 'vim/'}
+" Avoid a name conflict with L9
+Plugin 'user/L9', {'name': 'newL9'}
+
+" All of your Plugins must be added before the following line
+call vundle#end()            " required
+filetype plugin indent on    " required
+" To ignore plugin indent changes, instead use:
+"filetype plugin on
+"
+" Brief help
+" :PluginList       - lists configured plugins
+" :PluginInstall    - installs plugins; append `!` to update or just :PluginUpdate
+" :PluginSearch foo - searches for foo; append `!` to refresh local cache
+" :PluginClean      - confirms removal of unused plugins; append `!` to auto-approve removal
+"
+" see :h vundle for more details or wiki for FAQ
+" Put your non-Plugin stuff after this line
+Bundle 'wakatime/vim-wakatime'
+
+"Customizações Cassiano
+set vb
+set ts=2
+set lines=23
+set columns=80
+set sw=2
+set sts=2
+set ai
+set cin
+set et
+set si
+set sta
+"set gfn=Lucida\ Console:h9
+color darkblue
+
+"Teclas personalizadas
+"Aplicar sintaxe Linguagem C
+map <F2> :set syn=c<Enter>
+imap <F2> <ESC>:set syn=c<Enter>i
+
+"Aplicar sintaxe Shell Script
+map <S-F2> :set syn=sh<Enter>
+imap <S-F2> <ESC>:set syn=sh<Enter>i
+
+" Inserir debug automático
+imap <F3> if (!C_CRT_SYSTEM)<ENTER>printf("<%s:%d>\n",__FILE__,__LINE__); // tst Cassiano<ESC>39ha
+
+" Próximo buffer
+map <F6> :n<Enter>
+imap <F6> <ESC>:n<Enter>i
+
+" Buffer anterior
+map <S-F6> :N<Enter>
+imap <S-F6> <ESC>:N<Enter>i
+
+" Indentar linha
+map <F8> A<END><DEL><ENTER><ESC>
+imap <F8> <END><DEL><ENTER>
+
+" Atualizar Update
+map <F10> :diffupdate<ENTER>
+imap <F10> <ESC>:diffupdate<ENTER>i
+
+set nocompatible
+source $VIMRUNTIME/vimrc_example.vim
+source $VIMRUNTIME/mswin.vim
+behave mswin
+
+set diffexpr=MyDiff()
+function MyDiff()
+  let opt = ''
+  if &diffopt =~ 'icase' | let opt = opt . '-i ' | endif
+  if &diffopt =~ 'iwhite' | let opt = opt . '-b ' | endif
+  silent execute '!diff -awibB ' . opt . '"' . v:fname_in . '" "' . v:fname_new . '" > "' . v:fname_out . '"'
+endfunction
+
+
+
