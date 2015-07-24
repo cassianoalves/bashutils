@@ -34,84 +34,22 @@ then
   exit 1
 fi
 
-# Suite de testes para o script
-TMP="/tmp/hooktest.tmp"
-function assertMsgReturn() {
-  RET_EXPECTED=$1
-  TEST_MSG=$2
-  echo "$TEST_MSG" > $TMP
-
-  $0 $TMP
-  RET_ACTUAL=$?
-  if [ $RET_ACTUAL -ne $RET_EXPECTED ]
-  then
-    echo "Esperado $RET_EXPECTED mas retornou $RET_ACTUAL"
-    echo "Mensagem:"
-    cat $TMP
-    rm -f $TMP
-    exit 1
-  else
-    echo "Teste OK"
-  fi
-  rm -f $TMP
-
-}
-
-if [ "$1" == "--test" ]
+#--- Insere a issue automaticamente
+# Para usar recurso:
+# 1. Crie um arquivo com o nome da issue:
+#   echo "PROJ-123" > /tmp/arquivo
+# 2. Atribua o caminho do arquivo na variavel de ambiente JIRA_HOOK_ISSUE_FILE
+#   export JIRA_HOOK_ISSUE_FILE="/tmp/arquivo"
+if [ -n "$JIRA_HOOK_ISSUE_FILE" ] && [ -f $JIRA_HOOK_ISSUE_FILE ]
 then
-
-# Mensagem sem qualquer codigo de issue
-  assertMsgReturn 1 \
-"bla bla    
-ble ble 
-bli bli"
-
-# Mensagem com codigo de issue
-  assertMsgReturn 0 \
-"bla bla    
-ble ble 
-bli #PROJETO-12"
-
-# Mensagem com codigo de issue errado
-  assertMsgReturn 1 \
-"bla bla    
-ble ble 
-bli #PROJETO-122d"
-
-# Mensagem com codigo de issue errado
-  assertMsgReturn 1 \
-"bla bla    
-ble ble 
-bli PROJETO-122"
-
-# Mensagem com codigo de issue errado
-  assertMsgReturn 1 \
-"bla bla    
-ble ble 
-bli s#PROJETO-122
-asda dsadas"
-
-
-
-# Mensagem com outro codigo de issue
-  assertMsgReturn 0 \
-"bla bla    
-ble ble 
-bli #PROJ-1222 lalala"
-
-# Mensagem com outro codigo de issue com letras no nome do projeto
-  assertMsgReturn 0 \
-"bla bla    
-ble ble 
-bli #PROJ99-1222 lalala"
-
-# Mensagem com outro codigo de issue com letras no nome do projeto
-  assertMsgReturn 0 \
-"bla bla    
-ble ble 
-bli #123PROJ-122 lalala"
-
-exit 0
+  ISSUE=`cat $JIRA_HOOK_ISSUE_FILE`
+  if [ -n "$ISSUE" ]
+  then
+    TMP_MSG=/tmp/$$-jirahook.tmp
+    echo "#$ISSUE" > $TMP_MSG
+    cat $1 >> $TMP_MSG
+    cp $TMP_MSG $1
+  fi
 fi
 
 #--- Verifica se a mensagem contem o numero da issue

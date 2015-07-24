@@ -1,0 +1,144 @@
+#!/bin/bash
+# Suite de testes para o script jira-commit-msg
+SCR="jira-commit-msg"
+TMP="/tmp/hooktest.tmp"
+unset JIRA_HOOK_ISSUE_FILE
+
+function assertMsgReturn() {
+  RET_EXPECTED=$1
+  TEST_MSG=$2
+  echo "$TEST_MSG" > $TMP
+
+  ./$SCR $TMP
+  RET_ACTUAL=$?
+  if [ $RET_ACTUAL -ne $RET_EXPECTED ]
+  then
+    echo "Esperado $RET_EXPECTED mas retornou $RET_ACTUAL"
+    echo "Mensagem:"
+    cat $TMP
+    rm -f $TMP
+    exit 1
+  else
+    echo "Teste OK"
+  fi
+  rm -f $TMP
+  unset JIRA_HOOK_ISSUE_FILE
+
+}
+
+function assertAltMsgAndReturn() {
+  RET_EXPECTED=$1
+  TEST_MSG=$2
+  ALT_MSG_REGEXP=$3
+  echo "$TEST_MSG" > $TMP
+
+  ./$SCR $TMP
+  RET_ACTUAL=$?
+  ERRO=0
+  if [ $RET_ACTUAL -ne $RET_EXPECTED ]
+  then
+    echo "Esperado $RET_EXPECTED mas retornou $RET_ACTUAL"
+    ERRO=1
+  fi
+  
+  grep $ALT_MSG_REGEXP $TMP > /dev/null || {
+    echo "Mensagem final nao bate com $ALT_MSG_REGEXP"
+    ERRO=1
+  }
+
+  rm -f $JIRA_HOOK_ISSUE_FILE
+  unset JIRA_HOOK_ISSUE_FILE
+  if [ $ERRO -ne 0 ]
+  then 
+    echo "Mensagem:"
+    cat $TMP
+    rm -f $TMP
+    exit 1
+  else
+    rm -f $TMP
+    echo "Teste OK"
+  fi
+}
+
+
+# Mensagem sem qualquer codigo de issue
+  assertMsgReturn 1 \
+"bla bla    
+ble ble 
+bli bli"
+
+# Mensagem com codigo de issue
+  assertMsgReturn 0 \
+"bla bla    
+ble ble 
+bli #PROJETO-12"
+
+# Mensagem com codigo de issue errado
+  assertMsgReturn 1 \
+"bla bla    
+ble ble 
+bli #PROJETO-122d"
+
+# Mensagem com codigo de issue errado
+  assertMsgReturn 1 \
+"bla bla    
+ble ble 
+bli PROJETO-122"
+
+# Mensagem com codigo de issue errado
+  assertMsgReturn 1 \
+"bla bla    
+ble ble 
+bli s#PROJETO-122
+asda dsadas"
+
+# Mensagem com outro codigo de issue
+  assertMsgReturn 0 \
+"bla bla    
+ble ble 
+bli #PROJ-1222 lalala"
+
+# Mensagem com outro codigo de issue com letras no nome do projeto
+  assertMsgReturn 0 \
+"bla bla    
+ble ble 
+bli #PROJ99-1222 lalala"
+
+# Mensagem com outro codigo de issue com letras no nome do projeto
+  assertMsgReturn 0 \
+"bla bla    
+ble ble 
+bli #123PROJ-122 lalala"
+
+# Testes para recurso de incluir a issue automaticamente
+# Com issue setada
+export JIRA_HOOK_ISSUE_FILE=/tmp/testhook
+echo "PROJ-123" > $JIRA_HOOK_ISSUE_FILE
+  assertAltMsgAndReturn 0 \
+"bla bla    
+ble ble 
+bli" "#PROJ-123"
+
+# Com issue setada mas sem arquivo
+export JIRA_HOOK_ISSUE_FILE=/tmp/testhook
+  assertAltMsgAndReturn 1 \
+"bla bla    
+ble ble 
+bli" "bla"
+
+# Com issue setada e arquivo vazio
+export JIRA_HOOK_ISSUE_FILE=/tmp/testhook
+echo "" > $JIRA_HOOK_ISSUE_FILE
+  assertAltMsgAndReturn 1 \
+"bla bla    
+ble ble 
+bli" "bla"
+
+
+
+
+##########################
+echo ""
+echo TODOS OS TESTES OK!!!
+exit 0
+
