@@ -4,6 +4,7 @@ JDK_HOME=/opt/java7
 PATH=$HOME/bin:$JDK_HOME/bin:/opt/apache-maven/bin:$PATH
 
 ISSUES_FILE=~/.cache/cassiano/issues_active.txt
+export JIRA_HOOK_ISSUE_FILE=$ISSUES_FILE
 mkdir -p ~/.cache/cassiano
 function issues() {
   if [ $# -eq 0 -a -f $ISSUES_FILE ]
