@@ -46,7 +46,7 @@ then
   if [ -n "$ISSUE" ]
   then
     TMP_MSG=/tmp/$$-jirahook.tmp
-    echo "#$ISSUE" > $TMP_MSG
+    echo " #$ISSUE" > $TMP_MSG
     cat $1 >> $TMP_MSG
     cp $TMP_MSG $1
   fi
