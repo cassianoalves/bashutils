@@ -63,6 +63,14 @@ then
     shutdown_tomcat
     exit $?
   fi
+
+  echo $1 | grep "^-t" > /dev/null
+  if [ $? -eq 0 ]
+  then
+    echo "catalina.out em $TOMCAT_HOME"
+    tail -100f $TOMCAT_HOME/logs/catalina.out
+    exit $?
+  fi
 fi
 
 
