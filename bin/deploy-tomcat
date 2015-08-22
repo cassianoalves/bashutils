@@ -62,7 +62,7 @@ else
 fi
 
 #TOMCAT_HOME="$HOME/bin/apache-tomcat-7.0.53"
-TOMCAT_HOME="$HOME/opt/apache-tomcat"
+#TOMCAT_HOME="$HOME/opt/apache-tomcat"
 
 echo "Deploy de $WAR no tomcat em $TOMCAT_HOME"
 
