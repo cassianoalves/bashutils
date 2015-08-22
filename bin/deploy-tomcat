@@ -22,19 +22,19 @@ function getWar() {
 
 
 function shutdown_tomcat() {
-#	cd $TOMCAT_HOME/bin
-#	./shutdown.sh
-	TOMCAT_PID=`cat $TOMCAT_HOME/catalina.pid`
+	cd $TOMCAT_HOME/bin
+	./shutdown.sh
+#	TOMCAT_PID=`cat $TOMCAT_HOME/catalina.pid`
 
 	# Melhorar fazendo a verificação do PID e só dar kill se precisar	
-	if [ $? -eq 0 ]
-  then
-    kill $TOMCAT_PID
-	  sleep 5
-	  rm -f $TOMCAT_HOME/catalina.pid
-  else
-    echo "$TOMCAT_HOME/catalina.pid nao encontrado"
-  fi
+#	if [ $? -eq 0 ]
+#  then
+#    kill $TOMCAT_PID
+#	  sleep 5
+#	  rm -f $TOMCAT_HOME/catalina.pid
+#  else
+#    echo "$TOMCAT_HOME/catalina.pid nao encontrado"
+#  fi
 }
 
 
@@ -53,6 +53,19 @@ function install_app() {
   rm -rf $TOMCAT_HOME/webapps/$APP_DIR $TOMCAT_HOME/webapps/$APP_WAR
   cp $WAR $TOMCAT_HOME/webapps/
 }
+
+if [ $# -gt 0 ]
+then
+  echo $1 | grep "^-s" > /dev/null
+  if [ $? -eq 0 ]
+  then
+    echo "Baixando Tomcat em $TOMCAT_HOME"
+    shutdown_tomcat
+    exit $?
+  fi
+fi
+
+
 
 if [ $# -lt 1 ]
 then
