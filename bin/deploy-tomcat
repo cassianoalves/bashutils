@@ -24,6 +24,8 @@ function getWar() {
 function shutdown_tomcat() {
 	cd $TOMCAT_HOME/bin
 	./shutdown.sh
+  cd -
+  sleep 5
 #	TOMCAT_PID=`cat $TOMCAT_HOME/catalina.pid`
 
 	# Melhorar fazendo a verificação do PID e só dar kill se precisar	
@@ -51,6 +53,7 @@ function install_app() {
 	APP_WAR=`basename $WAR`
   APP_DIR=`echo $APP_WAR | sed "s/\.war//"`
   rm -rf $TOMCAT_HOME/webapps/$APP_DIR $TOMCAT_HOME/webapps/$APP_WAR
+  pwd
   cp $WAR $TOMCAT_HOME/webapps/
 }
 
