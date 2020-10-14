@@ -1,0 +1,55 @@
+
+ISSUES_FILE=~/.cache/$USER/issues_active.txt
+export JIRA_HOOK_ISSUE_FILE=$ISSUES_FILE
+mkdir -p ~/.cache/$USER
+function issues() {
+  if [ $# -eq 0 -a -f $ISSUES_FILE ]
+  then
+    cat $ISSUES_FILE
+  else
+    if [ $# -eq 1 -a "$1" == "-c" ]
+    then
+      rm -f $ISSUES_FILE
+    else
+      if [ $# -gt 1 -a "$1" == "-s" ]
+      then
+        shift
+        echo "$*" > $ISSUES_FILE
+      fi
+    fi
+  fi
+}
+
+function showIssues() {
+  ISSUES=`issues`
+  if [ "$ISSUES" == "" ]
+  then
+    echo ""
+  else
+    echo "$ISSUES"
+  fi
+}
+
+# Aliases
+alias st='git status'
+
+# Auto completion e prompt com branch do git
+case $OSTYPE in
+  "darwin19")
+    GIT_SCRIPTS_BASE=/Application/Xcode.app/Contents/Developer/usr/share/git-core
+    ;;
+  "linux-gnu")
+    # Linux (Fedora 24)
+    GIT_SCRIPTS_BASE=/usr/share/doc/git/contrib/completion
+    ;;
+  *)
+    GIT_SCRIPTS_BASE=/usr/share/doc/git/contrib/completion
+    ;;
+esac
+
+source $GIT_SCRIPTS_BASE/git-completion.bash
+source $GIT_SCRIPTS_BASE/git-prompt.sh 
+
+export PS1='\[\033[01;32m\]\u@\h:\[\033[01;34m\]\w\[\033[31m\]$(__git_ps1 "(%s|\[\033[01;33m\]$(showIssues)\[\033[00;31m\])")\[\033[01;34m\]$\[\033[00m\] '
+
+
