@@ -1,0 +1,23 @@
+#!/bin/bash
+
+CACHE_DIR=$HOME/.cache/githook
+mkdir -p $CACHE_DIR
+
+PWD=`pwd`
+
+ln -fs $PWD/git-hooks/jira-commit-msg $CACHE_DIR/commit-msg
+
+
+if [ -f $HOME/.bashrc ]
+then
+  grep "gittools" $HOME/.bashrc
+  if [ $? -ne 0 ]
+  then
+    echo "# Githooks de integracao com Jira e mensagens" >> $HOME/.bashrc
+    echo "source $PWD/profiles/bashrc.d/gittools" >> $HOME/.bashrc
+  else
+    echo "Uma versao do gittools ja esta presente em .bashrc"
+  fi
+else
+  echo ".bashrc nao presente no home $HOME"
+fi
