@@ -1,46 +1,7 @@
-# Opcoes Cassiano
-JAVA_HOME=/opt/java7/jre
-JDK_HOME=/opt/java7
-PATH=$HOME/bin:$JDK_HOME/bin:/opt/apache-maven/bin:$PATH
 
-ISSUES_FILE=~/.cache/cassiano/issues_active.txt
-export JIRA_HOOK_ISSUE_FILE=$ISSUES_FILE
-mkdir -p ~/.cache/cassiano
-function issues() {
-  if [ $# -eq 0 -a -f $ISSUES_FILE ]
-  then
-    cat $ISSUES_FILE
-  else
-    if [ $# -eq 1 -a "$1" == "-c" ]
-    then
-      rm -f $ISSUES_FILE
-    else
-      if [ $# -gt 1 -a "$1" == "-s" ]
-      then
-        shift
-        echo "$*" > $ISSUES_FILE
-      fi
-    fi
-  fi
-}
-
-function showIssues() {
-  ISSUES=`issues`
-  if [ "$ISSUES" == "" ]
-  then
-    echo ""
-  else
-    echo "|$ISSUES"
-  fi
-}
-
-
-export PS1='\[\033[01;32m\]\u@\h:\[\033[01;34m\]\w\[\033[31m\]$(__git_ps1 \[\033[01;33m\]"(%s$(showIssues))"\[\033[00;31m\])\[\033[01;34m\]$\[\033[00m\] '
 
 alias sqlplus='env LD_LIBRARY_PATH="/opt/oracle/instantclient_12_1" /opt/oracle/instantclient_12_1/sqlplus'
-alias st='git status'
 
-CHAVE=$HOME/Documents/chaves-acessos/cloudopen.rsa
 
 txtblk='\e[0;30m' # Black - Regular
 txtred='\e[0;31m' # Red

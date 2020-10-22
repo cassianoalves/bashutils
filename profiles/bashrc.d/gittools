@@ -1,7 +1,18 @@
+# O install 
+# Inclui no seu bashrc
+# Use 
+# $ issues : para ver o que está ativo
+# $ issues -s <ID da Issue> : para definir a issue atual
+# Ex. issues MYPROJ-123
+# $ issues -c : para limpar a issue atual
+#
+# No diretorio do seu projeto inclua o script commit-msg em seuprojeto/.git/hooks através do comando
+# installIssueHook executado na raiz do projeto git
 
-ISSUES_FILE=~/.cache/$USER/issues_active.txt
+CACHE_DIR=$HOME/.cache/githook
+ISSUES_FILE=$CACHE_DIR/issues_active.txt
 export JIRA_HOOK_ISSUE_FILE=$ISSUES_FILE
-mkdir -p ~/.cache/$USER
+
 function issues() {
   if [ $# -eq 0 -a -f $ISSUES_FILE ]
   then
@@ -26,9 +37,32 @@ function showIssues() {
   then
     echo ""
   else
-    echo "$ISSUES"
+    echo "|\033[33m$ISSUES\033[31m"
   fi
 }
+
+function installIssueHook() {
+
+  if [ -d ./.git ]
+  then
+    if [ -f ./.git/hooks/commit-msg ]
+    then
+      echo "Hook commit-msg ja existente. Atualizar? [S/N]"
+      read R
+      if [ "$R" != "S" -a "$R" != "s" ]
+      then
+        return 0
+      fi
+    fi
+  else
+    echo "Entre no diretorio raiz do seu projeto git para instalar o hook"
+    return 1
+  fi
+
+  ln -fs $CACHE_DIR/commit-msg ./.git/hooks/commit-msg
+  echo "Hook instalado!"
+}
+
 
 # Aliases
 alias st='git status'
@@ -47,9 +81,13 @@ case $OSTYPE in
     ;;
 esac
 
-source $GIT_SCRIPTS_BASE/git-completion.bash
-source $GIT_SCRIPTS_BASE/git-prompt.sh 
+if [ -f $GIT_SCRIPTS_BASE ]
+then
+  source $GIT_SCRIPTS_BASE/git-completion.bash
+  source $GIT_SCRIPTS_BASE/git-prompt.sh 
+else
+  echo "Scripts de automacao do git não encontrados! - $GIT_SCRIPTS_BASE"
+fi
 
-export PS1='\[\033[01;32m\]\u@\h:\[\033[01;34m\]\w\[\033[31m\]$(__git_ps1 "(%s|\[\033[01;33m\]$(showIssues)\[\033[00;31m\])")\[\033[01;34m\]$\[\033[00m\] '
 
-
+export PS1='\[\033[01;32m\]\u@\h:\[\033[01;34m\]\w\[\033[31m\]$(__git_ps1 "(%s$(showIssues))")\[\033[01;34m\]$\[\033[00m\] '
