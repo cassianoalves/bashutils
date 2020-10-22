@@ -46,7 +46,7 @@ then
   if [ -n "$ISSUE" ]
   then
     TMP_MSG=/tmp/$$-jirahook.tmp
-    echo -n " #$ISSUE - " > $TMP_MSG
+    echo -n " [$ISSUE] - " > $TMP_MSG
     cat $1 >> $TMP_MSG
     cp $TMP_MSG $1
   fi
@@ -57,12 +57,12 @@ bldred='\e[1;31m' # Red
 bldylw='\e[1;33m' # Yellow
 txtblu='\e[0;34m' # Blue
 txtrst='\e[0m'    # Text Reset
-grep -w "#[A-Z0-9]\{1,\}-[0-9]\{1,\}" $1 > /dev/null || {
+grep -w "\[[A-Z0-9]\{1,\}-[0-9]\{1,\}\]" $1 > /dev/null || {
   echo -en $bldred
   echo "Noooooooo!!!"
   echo "COMMIT NAO EFETUADO!"
   echo -en $bldylw
-  echo "Ae fera! Coloca a issue ai! Formato #SEUPROJETO-999"
+  echo "Ae fera! Coloca a issue ai! Formato [SEUPROJETO-999]"
   echo -en $txtblu
   echo "Se não quiser colocar mesmo, faça o commit com a opcao --no-verify"
   echo -en $txtrst

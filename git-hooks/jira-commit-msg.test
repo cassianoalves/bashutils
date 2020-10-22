@@ -71,13 +71,13 @@ bli bli"
   assertMsgReturn 0 \
 "bla bla    
 ble ble 
-bli #PROJETO-12"
+bli [PROJETO-12]"
 
 # Mensagem com codigo de issue errado
   assertMsgReturn 1 \
 "bla bla    
 ble ble 
-bli #PROJETO-122d"
+bli [PROJETO-122d]"
 
 # Mensagem com codigo de issue errado
   assertMsgReturn 1 \
@@ -89,26 +89,26 @@ bli PROJETO-122"
   assertMsgReturn 1 \
 "bla bla    
 ble ble 
-bli s#PROJETO-122
+bli s[PROJETO-122]
 asda dsadas"
 
 # Mensagem com outro codigo de issue
   assertMsgReturn 0 \
 "bla bla    
 ble ble 
-bli #PROJ-1222 lalala"
+bli [PROJ-1222] lalala"
 
 # Mensagem com outro codigo de issue com letras no nome do projeto
   assertMsgReturn 0 \
 "bla bla    
 ble ble 
-bli #PROJ99-1222 lalala"
+bli [PROJ99-1222] lalala"
 
 # Mensagem com outro codigo de issue com letras no nome do projeto
   assertMsgReturn 0 \
 "bla bla    
 ble ble 
-bli #123PROJ-122 lalala"
+bli [123PROJ-122] lalala"
 
 # Testes para recurso de incluir a issue automaticamente
 # Com issue setada
@@ -117,7 +117,7 @@ echo "PROJ-123" > $JIRA_HOOK_ISSUE_FILE
   assertAltMsgAndReturn 0 \
 "bla bla    
 ble ble 
-bli" "#PROJ-123"
+bli" "\[PROJ-123\]"
 
 # Com issue setada mas sem arquivo
 export JIRA_HOOK_ISSUE_FILE=/tmp/testhook
