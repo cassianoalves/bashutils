@@ -1,8 +1,5 @@
 #!/bin/bash
 
-unset JDKS_BASE
-unset JDK_PREFIX
-
 function setJava() {
 
   if [ "$JDKS_BASE" == "" ] || [  "$JDK_PREFIX" == "" ]
@@ -21,9 +18,9 @@ function setJava() {
 
   if [ "$OLD_HOME" == "" ]
   then
-    export xPATH=$JAVA_HOME/bin:$PATH
+    export PATH=$JAVA_HOME/bin:$PATH
   else
-    export xPATH=`echo $PATH | awk '{gsub("'$OLD_HOME'", "'$JAVA_HOME'"); print}'`
+    export PATH=`echo $PATH | awk '{gsub("'$OLD_HOME'", "'$JAVA_HOME'"); print}'`
   fi
 }
 
