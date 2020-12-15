@@ -81,7 +81,7 @@ case $OSTYPE in
     ;;
 esac
 
-if [ -f $GIT_SCRIPTS_BASE ]
+if [ -d $GIT_SCRIPTS_BASE ]
 then
   source $GIT_SCRIPTS_BASE/git-completion.bash
   source $GIT_SCRIPTS_BASE/git-prompt.sh 
