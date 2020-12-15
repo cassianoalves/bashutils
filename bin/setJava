@@ -1,0 +1,31 @@
+#!/bin/bash
+
+unset JDKS_BASE
+unset JDK_PREFIX
+
+function setJava() {
+
+  if [ "$JDKS_BASE" == "" ] || [  "$JDK_PREFIX" == "" ]
+  then
+    echo "Variaveis JDKS_BASE e/ou JDK_PREFIX nao definidas"
+    echo "Definir - Exemplo"
+    echo "  JDKS_BASE=$HOME/opt"
+    echo "  JDK_PREFIX=jdk-"
+    return
+  fi
+
+  OLD_HOME=$JAVA_HOME
+  JAVA_HOME=$JDKS_BASE/${JDK_PREFIX}$1
+  JDK_HOME=$JAVA_HOME
+  JRE_HOME=$JAVA_HOME
+
+  if [ "$OLD_HOME" == "" ]
+  then
+    export xPATH=$JAVA_HOME/bin:$PATH
+  else
+    export xPATH=`echo $PATH | awk '{gsub("'$OLD_HOME'", "'$JAVA_HOME'"); print}'`
+  fi
+}
+
+
+setJava 2
